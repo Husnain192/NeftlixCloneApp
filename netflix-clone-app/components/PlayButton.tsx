@@ -1,36 +1,30 @@
 import React from 'react';
-import { BsFillPlayFill } from 'react-icons/bs';
+import { BsPlayFill } from 'react-icons/bs';
 import { useRouter } from 'next/router';
 
 interface PlayButtonProps {
   movieId: string;
+  label?: string;
 }
 
-const PlayButton: React.FC<PlayButtonProps> = ({ movieId }) => {
+const buttonStyles = `
+  bg-white text-black rounded-md py-2 px-4 w-auto text-sm md:text-lg font-semibold
+  flex items-center hover:bg-blue-100 transition-colors duration-200
+`;
+
+const PlayButton: React.FC<PlayButtonProps> = ({ movieId, label = 'Play' }) => {
   const router = useRouter();
 
   return (
-    <button 
+    <button
       onClick={() => router.push(`/watch/${movieId}`)}
-      className="
-        bg-white 
-        rounded-md 
-        py-1 md:py-2 
-        px-2 md:px-4
-        w-auto 
-        text-xs lg:text-lg 
-        font-semibold
-        flex
-        flex-row
-        items-center
-        hover:bg-neutral-300
-        transition
-        "
-      >
-        <BsFillPlayFill className="w-4 md:w-7 text-black mr-1" />
-        Play
+      className={buttonStyles}
+      aria-label={`Play ${label}`}
+    >
+      <BsPlayFill className="w-5 h-5 md:w-7 md:h-7 mr-1" />
+      {label}
     </button>
   );
-}
+};
 
 export default PlayButton;

@@ -1,16 +1,26 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface NavbarItemProps {
   label: string;
   active?: boolean;
+  onClick?: () => void;
 }
 
-const NavbarItem: React.FC<NavbarItemProps> = ({ label, active }) => {
+const NavigationItem: React.FC<NavbarItemProps> = ({ label, active, onClick }) => {
   return (
-    <div className={active ? 'text-white cursor-default' : 'text-gray-200 hover:text-gray-300 cursor-pointer transition'}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyPress={(e) => e.key === 'Enter' && onClick?.()}
+      className={`
+        text-lg font-medium transition-colors duration-200
+        ${active ? 'text-white cursor-default' : 'text-gray-200 hover:text-white cursor-pointer'}
+      `}
+    >
       {label}
     </div>
-  )
-}
+  );
+};
 
-export default NavbarItem;
+export default memo(NavigationItem);

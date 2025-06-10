@@ -10,14 +10,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { email, name, password } = req.body;
 
+    if (!email || !email.includes('@') || !name || !password) {
+      return res.status(400).json({ error: 'Invalid input' });
+    }
+
     const existingUser = await prismadb.user.findUnique({
-      where: {
-        email
-      }
-    })
+      where: { email }
+    });
 
     if (existingUser) {
-      return res.status(422).json({ error: 'Email taken' });
+      return res.status(422).json({ error: 'Email already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -27,13 +29,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         email,
         name,
         hashedPassword,
-        image: '',
-        emailVerified: new Date(),
+        emailVerified: null, // Important for credentials users
+        image: null,
       }
-    })
+    });
 
-    return res.status(200).json(user);
+    return res.status(201).json({
+      id: user.id,
+      email: user.email,
+      name: user.name
+    });
   } catch (error) {
-    return res.status(400).json({ error: `Something went wrong: ${error}` });
+    console.error('Registration error:', error);
+    return res.status(500).json({ error: 'Registration failed' });
   }
 }

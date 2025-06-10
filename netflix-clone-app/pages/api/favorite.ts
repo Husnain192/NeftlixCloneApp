@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { without } from "lodash";
-
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/serverAuth";
 
@@ -8,74 +7,57 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     if (req.method === 'POST') {
       const { currentUser } = await serverAuth(req, res);
-
       const { movieId } = req.body;
-      console.log(movieId)
-  
-      const existingMovie = await prismadb.movie.findUnique({
-        where: {
-          id: movieId,
-        }
-      });
-  
-      if (!existingMovie) {
-        throw new Error('Invalid ID');
+
+      if (!movieId || typeof movieId !== 'string') {
+        return res.status(400).json({ error: 'Invalid movie ID' });
       }
-  
-      const user = await prismadb.user.update({
-        where: {
-          email: currentUser.email || '',
-        },
-        data: {
-          favoriteIds: {
-            push: movieId
-          }
-        }
+
+      const existingMovie = await prismadb.movie.findUnique({
+        where: { id: movieId }
       });
-  
-      res.status(200).json(user);
-      return;
+
+      if (!existingMovie) {
+        return res.status(404).json({ error: 'Movie not found' });
+      }
+
+      const user = await prismadb.user.update({
+        where: { email: currentUser.email || '' },
+        data: { favoriteIds: { push: movieId } }
+      });
+
+      return res.status(200).json(user);
     }
 
     if (req.method === 'DELETE') {
       const { currentUser } = await serverAuth(req, res);
-
       const { movieId } = req.query;
-      console.log(movieId)
 
-      if (!movieId) {
-        throw new Error('Invalid movie ID');
+      if (!movieId || typeof movieId !== 'string') {
+        return res.status(400).json({ error: 'Invalid movie ID' });
       }
 
       const existingMovie = await prismadb.movie.findUnique({
-        where: {
-          id: movieId,
-        }
+        where: { id: movieId }
       });
 
       if (!existingMovie) {
-        throw new Error('Invalid ID');
+        return res.status(404).json({ error: 'Movie not found' });
       }
 
       const updatedFavoriteIds = without(currentUser.favoriteIds, movieId);
 
       const updatedUser = await prismadb.user.update({
-        where: {
-          email: currentUser.email || '',
-        },
-        data: {
-          favoriteIds: updatedFavoriteIds,
-        }
+        where: { email: currentUser.email || '' },
+        data: { favoriteIds: updatedFavoriteIds }
       });
 
-      res.status(200).json(updatedUser);
-      return;
+      return res.status(200).json(updatedUser);
     }
-    
-    res.status(405).end();
-  } catch (error) {
-    console.log(error);
 
-    res.status(500).end();
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (error) {
+    console.error('Error in /api/favorite:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
