@@ -33,7 +33,7 @@ const Billboard: React.FC = () => {
         onError={() => setPosterSrc('/images/poster.png')}
       />
       <img
-        src={posterSrc}
+        src={data?.thumbnailUrl}
         alt="Poster fallback"
         className="hidden"
         onError={handlePosterError}
@@ -51,7 +51,8 @@ const Billboard: React.FC = () => {
             onClick={handleOpenModal}
             className="
               bg-white/30 text-white rounded-md py-2 px-4 w-auto text-sm md:text-lg font-semibold
-              flex items-center hover:bg-white/20 transition
+              flex items-center hover:bg-white/20 transition transform hover:scale-105
+              focus:outline-none focus:ring-2 focus:ring-white
             "
             aria-label="More info about the featured movie"
           >

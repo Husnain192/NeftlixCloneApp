@@ -39,9 +39,7 @@ const Navbar: React.FC = () => {
   const menuItems = [
     { label: 'Home', onClick: () => router.push('/'), active: router.pathname === '/' },
     { label: 'My List', onClick: () => router.push('/my-list') },
-    // Add more routes as pages are created
     { label: 'Series', onClick: () => router.push('/series') },
-    // { label: 'Films', onClick: () => router.push('/films') },
   ];
 
   return (
@@ -49,7 +47,7 @@ const Navbar: React.FC = () => {
       <div
         className={`
           px-4 md:px-16 py-6 flex flex-row items-center transition duration-500
-          ${showBackground ? 'bg-zinc-900/90' : ''}
+          ${showBackground ? 'bg-zinc-900/90' : 'bg-transparent'}
         `}
       >
         <img src="/images/logo.png" className="h-4 md:h-7" alt="Netflix logo" />

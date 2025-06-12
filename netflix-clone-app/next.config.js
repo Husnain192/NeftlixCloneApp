@@ -2,7 +2,7 @@
 
 module.exports = {
   images: {
-    domains: ['img.youtube.com', 'cdn.pixabay.com'],
+    domains: ['img.youtube.com', 'cdn.pixabay.com', 'my-netflix-clone-bucket.s3.ap-south-1.amazonaws.com'],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
